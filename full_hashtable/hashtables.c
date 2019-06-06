@@ -75,9 +75,10 @@ HashTable *create_hash_table(int capacity)
 {
   HashTable *ht = malloc(sizeof(HashTable));
 
+  // Allocate memory for key/value pair storage
   ht->storage = calloc(capacity, sizeof(LinkedPair *));
   ht->capacity = capacity;
-  
+
   return ht;
 }
 
@@ -93,7 +94,28 @@ HashTable *create_hash_table(int capacity)
 void hash_table_insert(HashTable *ht, char *key, char *value)
 {
 
-}
+  // Hash the key
+  unsigned int index = hash(key, ht->capacity);
+  // Create a key/value pair
+  LinkedPair *linkedPair = create_pair(key, value);
+
+  LinkedPair *stored_linked_pair = ht->storage[index];
+
+  // If there is something already there
+  if (stored_linked_pair != NULL)
+  {
+
+    if (strcmp(key, stored_linked_pair->key) != 0)
+    {
+      stored_linked_pair->next = linkedPair;
+    }
+    if (strcmp(key, stored_linked_pair->key) == 0)
+    {
+      printf("WARNING: key already in LL, overriding value\n");
+      stored_linked_pair->value = value;
+    }
+    return;
+  }
 
 /*
   Fill this in.
