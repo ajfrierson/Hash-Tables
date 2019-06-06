@@ -117,6 +117,13 @@ void hash_table_insert(HashTable *ht, char *key, char *value)
     return;
   }
 
+  // Add the hashedkey to the appropriate spot in ht
+  ht->storage[index] = linkedPair;
+
+
+
+}
+
 /*
   Fill this in.
 
@@ -127,6 +134,19 @@ void hash_table_insert(HashTable *ht, char *key, char *value)
  */
 void hash_table_remove(HashTable *ht, char *key)
 {
+
+  unsigned int index = hash(key, ht->capacity);
+
+  if (ht->storage[index] == NULL || (
+      strcmp(ht->storage[index]->key, key) != 0))
+  {
+    printf("Unable to remove entry\n");
+  }
+  else
+  {
+    destroy_pair(ht->storage[index]);
+    ht->storage[index] = NULL;
+  }
 
 }
 
@@ -140,25 +160,51 @@ void hash_table_remove(HashTable *ht, char *key)
  */
 char *hash_table_retrieve(HashTable *ht, char *key)
 {
-  return NULL;
+  // hash the provided key to get the index
+  unsigned int index = hash(key, ht->capacity);
+
+  // if there's nothing there return NULL
+  if (ht->storage[index] == NULL)
+  {
+    printf("Unable to retrieve entry\n");
+
+
+    return NULL;
+  }
+
+  // if the key's don't match search next LinkedPair if available
+
+  int * currentelement = ht->storage[index];
+  while (currentelement->next =! NULL) {
+
+    if 
+      ((strcmp(currentKey->key, key) != 0))   {
+    printf("Found it!\n");
+    return currentKey->value;
+  }
+
+      currentelement = currentelement->next;
+
+  }
+
+  // otherwise return the value at the given key
+  return ht->storage[index]->value;
 }
 
 /*
   Fill this in.
-
   Don't forget to free any malloc'ed memory!
  */
 void destroy_hash_table(HashTable *ht)
 {
-
+  free(ht->storage);
+  free(ht);
 }
 
 /*
   Fill this in.
-
   Should create a new hash table with double the capacity
   of the original and copy all elements into the new hash table.
-
   Don't forget to free any malloc'ed memory!
  */
 HashTable *hash_table_resize(HashTable *ht)
