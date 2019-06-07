@@ -70,50 +70,105 @@ unsigned int hash(char *str, int max)
  ****/
 BasicHashTable *create_hash_table(int capacity)
 {
-  BasicHashTable *ht;
+  // Allocate memory for the HasTable struct
+  BasicHashTable *ht = malloc(sizeof(BasicHashTable));
+
+  // Allocate memory for key/value pair storage
+  ht->storage = calloc(capacity, sizeof(Pair *));
+  ht->capacity = capacity;
 
   return ht;
 }
 
 /****
   Fill this in.
-
   If you are overwriting a value with a different key, print a warning.
-
   Don't forget to free any malloc'ed memory!
  ****/
 void hash_table_insert(BasicHashTable *ht, char *key, char *value)
 {
 
+  // Hash the key
+  unsigned int index = hash(key, ht->capacity);
+  // Create a key/value pair
+  Pair *pair = create_pair(key, value);
+
+  Pair *stored_pair = ht->storage[index];
+
+  // If there is something already there
+  if (stored_pair != NULL)
+  {
+
+    if (strcmp(key, stored_pair->key) != 0)
+    {
+      printf("WARNING: overwriting previous values\n");
+    }
+    destroy_pair(stored_pair);
+  }
+
+  // Add the hashedkey to the appropriate spot in ht
+  ht->storage[index] = pair;
+
 }
 
 /****
   Fill this in.
-
   Don't forget to free any malloc'ed memory!
  ****/
 void hash_table_remove(BasicHashTable *ht, char *key)
 {
+  unsigned int index = hash(key, ht->capacity);
 
+  if (ht->storage[index] == NULL || (
+      strcmp(ht->storage[index]->key, key) != 0))
+  {
+    printf("Unable to remove entry\n");
+  }
+  else
+  {
+    destroy_pair(ht->storage[index]);
+    ht->storage[index] = NULL;
+  }
 }
 
 /****
   Fill this in.
-
   Should return NULL if the key is not found.
  ****/
 char *hash_table_retrieve(BasicHashTable *ht, char *key)
 {
-  return NULL;
+  // hash the provided key to get the index
+  unsigned int index = hash(key, ht->capacity);
+
+  // if there is nothing there or the key's don't match
+  if (ht->storage[index] == NULL || (
+      strcmp(ht->storage[index]->key, key) != 0))
+  {
+    printf("Unable to retrieve entry\n");
+
+    return NULL;
+  }
+
+  // otherwise return the value at the given key
+  return ht->storage[index]->value;
 }
 
 /****
   Fill this in.
-
   Don't forget to free any malloc'ed memory!
  ****/
 void destroy_hash_table(BasicHashTable *ht)
 {
+
+// free every individual element in storage first
+
+for (int i = 0; i < ht->capacity; i++) {
+  if (ht->storage[i] != NULL) {
+    destroy_pair(ht->storage[i]);
+  }
+}
+  free(ht->storage);
+  free(ht);
 
 }
 
